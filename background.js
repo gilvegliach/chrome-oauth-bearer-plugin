@@ -41,13 +41,19 @@ function updateSetting (url_pattern, user_name, auth_url, pass_word) {
     fetchToken();
 }
 
+function startsWithPattern(input, pattern) {
+	pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+	pattern = pattern.replace(/\*/g, ".*");
+	pattern = "^" + pattern;
+	return input.match(pattern);
+}
 
 chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
     if (token && urlPatterns) {
         var urlPatternsArray =  urlPatterns.split("\n")
         var match = false;
         for (i = 0; i < urlPatternsArray.length; i++) {
-            if (details.url.startsWith(urlPatternsArray[i])) {
+            if (startsWithPattern(details.url, urlPatternsArray[i])) {
                 match = true;
                 break;
             }
